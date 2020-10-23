@@ -114,9 +114,9 @@ class Blackjack(Game):
 
     for c in cds:
       if c == "A" or (c == "X" and self.hidden == "A"):
-        if s + 10 > 21:
+        if s + 11 > 21:
           s += 1
         else:
-          s += 10
+          s += 11
         
     return s
