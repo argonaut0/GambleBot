@@ -1,12 +1,11 @@
 [tool.poetry]
-name = "hydiscordbot"
+name = "gamblebot"
 version = "0.1.0"
 description = ""
-authors = ["Your Name <you@example.com>"]
+authors = ["Jason Hsu <contact@thejhsu.ca>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-hy = "^0.19.0"
 "discord.py" = "^1.4.0"
 flask = "^1.1.2"
 
