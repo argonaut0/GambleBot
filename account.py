@@ -1,3 +1,4 @@
+# Represents a bank account for a player
 class Account:
   def __init__(self):
     self.cash = 1000

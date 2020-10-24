@@ -21,16 +21,22 @@ async def on_ready():
   print("logged in as {0.user}".format(client))
 
 
-### Runs on message
+### Runs on send message
 @client.event
 async def on_message(message):
+  # Check so that the bot does not respond to itself
   if message.author == client.user:
     return
+
+  # Check for active games
   if message.author in games:
     if not await games[message.author].play(message):
       del games[message.author]
   
+
+  # Check for commands
   if message.content.startswith("."):
+    # Create a new account if not existing
     if message.author.id not in accounts:
       accounts[message.author.id] = Account()
     c = message.content[1:].split(" ")
