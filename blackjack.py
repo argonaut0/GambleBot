@@ -15,7 +15,7 @@ class Blackjack(Game):
         self.hand: CardHand = []
         self.hidden: Card = None
         # Dealer Hand
-        self.dealerhand: CardHand = []
+        self.dealer_hand: CardHand = []
         self.account.use(bet)
 
     ##
@@ -26,8 +26,8 @@ class Blackjack(Game):
     # return: True if the game is still going
     async def start(self, m: Message) -> bool:
         self.hidden = self.draw()
-        self.dealerhand.append("X")
-        self.dealerhand.append(self.draw())
+        self.dealer_hand.append("X")
+        self.dealer_hand.append(self.draw())
         return await self._hit(m)
 
     # Makes a play
@@ -49,20 +49,20 @@ class Blackjack(Game):
     async def _hit(self, m: Message) -> bool:
         self.hand.append(self.draw())
 
-        await m.channel.send(str(self.player) + "\n" + self.prnthands())
+        await m.channel.send(str(self.player) + "\n" + self.print_hands())
 
         return await self._eval_game(m)
 
     # Makes the stand and ends the game if no one busts or blackjacks
     async def _stand(self, m: Message) -> None:
-        self.dealerhand[0] = self.hidden
-        while self._sum(self.dealerhand) < 17:
-            self.dealerhand.append(self.draw())
+        self.dealer_hand[0] = self.hidden
+        while self._sum(self.dealer_hand) < 17:
+            self.dealer_hand.append(self.draw())
 
-        await m.channel.send(str(self.player) + "\n" + self.prnthands())
+        await m.channel.send(str(self.player) + "\n" + self.print_hands())
 
         if await self._eval_game(m):
-            if self._sum(self.dealerhand) > self._sum(self.hand):
+            if self._sum(self.dealer_hand) > self._sum(self.hand):
                 await self.lose(m)
             else:
                 await self.win(m)
@@ -78,11 +78,11 @@ class Blackjack(Game):
             await m.channel.send("Bust!")
             await self.lose(m)
             return False
-        elif self._sum(self.dealerhand) == 21:
+        elif self._sum(self.dealer_hand) == 21:
             await m.channel.send("Dealer Blackjack!")
             await self.lose(m)
             return False
-        elif self._sum(self.dealerhand) > 21:
+        elif self._sum(self.dealer_hand) > 21:
             await m.channel.send("Dealer bust!")
             await self.win(m)
             return False
@@ -119,8 +119,8 @@ class Blackjack(Game):
         return s
 
     # return: pretty str representation of the 2 hands
-    def prnthands(self) -> str:
-        return "Dealer hand: " + str(self.dealerhand) + "\n" + "Your hand is " + str(self.hand)
+    def print_hands(self) -> str:
+        return "Dealer hand: " + str(self.dealer_hand) + "\n" + "Your hand is " + str(self.hand)
 
     # return: popped random card from the deck
     def draw(self) -> Card:
