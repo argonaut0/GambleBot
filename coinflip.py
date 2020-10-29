@@ -1,12 +1,13 @@
 from random import randint
 from discord.ext import commands
 
+
 class CoinFlip(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
     def flip(self):
-        return randint(0,1)
+        return randint(0, 1)
 
     @commands.command()
     async def coinflip(self, ctx, amt: int):
@@ -17,4 +18,3 @@ class CoinFlip(commands.Cog):
                 await eco.earn(ctx, 2 * amt)
             else:
                 await ctx.channel.send("You Lost $" + str(amt))
-

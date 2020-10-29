@@ -11,7 +11,6 @@ class Blackjack(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-
     @commands.command()
     async def blackjack(self, ctx, bet: int):
         # type: (self, context, int) -> None
@@ -21,7 +20,6 @@ class Blackjack(commands.Cog):
             if not games.active(ctx) and await eco.spend(ctx, bet):
                 games.add(ctx, Blackjack._Game(ctx.author, bet, self))
                 await games.get(ctx).start(ctx.message)
-
 
     class _Game:
         def __init__(self, player, bet, handle):
@@ -34,7 +32,6 @@ class Blackjack(commands.Cog):
             self.hidden: Card = None
             # Dealer Hand
             self.dealer_hand: CardHand = []
-
 
         ##
         # PUBLIC API
@@ -168,4 +165,3 @@ class Blackjack(commands.Cog):
                     else:
                         s += 11
             return s
-

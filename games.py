@@ -1,13 +1,14 @@
 from discord.ext import commands
 
+
 class Games(commands.Cog):
-    
+
     def __init__(self, bot):
         self.bot = bot
 
         # games is dict(str, Game)
         self.games = {}
-        
+
         @self.bot.event
         async def on_message(m):
             if m.author == self.bot.user:
@@ -30,5 +31,4 @@ class Games(commands.Cog):
         return ctx.author.id in self.games
 
     def get(self, ctx):
-        return self.games[ctx.author.id] 
-
+        return self.games[ctx.author.id]

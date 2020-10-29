@@ -2,7 +2,6 @@ import os
 
 from discord.ext import commands
 
-
 from eco import Eco
 from games import Games
 from blackjack import Blackjack
@@ -11,12 +10,12 @@ from coinflip import CoinFlip
 COMMAND_PREFIX = "."
 TOKEN = os.environ.get("DISCORD_BOT_SECRET")
 
-
 bot = commands.Bot(command_prefix=COMMAND_PREFIX)
 bot.add_cog(Eco(bot))
 bot.add_cog(Games(bot))
 bot.add_cog(Blackjack(bot))
 bot.add_cog(CoinFlip(bot))
+
 
 @bot.event
 async def on_ready():

@@ -1,10 +1,10 @@
 import discord
 from discord.ext import commands
 
+
 class Eco(commands.Cog):
     NO_BAL_STR = ", You don't have enough money!"
     INIT_WALLET_BAL = 1000
-
 
     def __init__(self, bot):
         self.bot = bot
@@ -23,7 +23,7 @@ class Eco(commands.Cog):
         await self._check_wallet(ctx.author.id)
         wal = self.wallets[ctx.author.id].bal
         # TODO bank
-        bal = 0 #self.bank[ctx.author.id].bal
+        bal = 0  # self.bank[ctx.author.id].bal
         await ctx.channel.send(str(ctx.author) + " you have: \n   Wallet: $" + str(wal) + "\n   Bank: $" + str(bal))
 
     @commands.command()
@@ -35,7 +35,6 @@ class Eco(commands.Cog):
             await self.wallets[usr.id].add(amt)
             await ctx.channel.send(str(ctx.author) + " gave " + str(usr) + " $" + str(amt))
 
-
     async def spend(self, ctx, amt):
         # type: (Context, int) -> bool
         await self._check_wallet(ctx.author.id)
@@ -44,23 +43,19 @@ class Eco(commands.Cog):
             return False
         return True
 
-
     async def earn(self, ctx, amt):
         await self._check_wallet(ctx.author.id)
         await self.wallets[ctx.author.id].add(amt)
         await self.print_bal(ctx)
-
 
     async def _check_wallet(self, uid):
         # type: (str) -> None
         if uid not in self.wallets:
             await self._add_wallet(uid)
 
-
     async def _add_wallet(self, uid):
         # type: (str) -> None
         self.wallets[uid] = Eco.Wallet(Eco.INIT_WALLET_BAL)
-
 
     class Wallet:
         def __init__(self, bal):
