@@ -1,0 +1,2 @@
+- negative bet can be entered when gambling
+- blackjack wins have a race condition
