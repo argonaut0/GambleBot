@@ -1,3 +1,6 @@
+# deprecated
+
+
 # Represents a bank account for a player
 class Account:
     def __init__(self):

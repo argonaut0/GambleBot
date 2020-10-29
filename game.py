@@ -1,3 +1,4 @@
+# deprecated
 from abc import ABC, abstractmethod
 from discord import Member, Message
 from account import Account
