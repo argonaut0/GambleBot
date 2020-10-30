@@ -85,6 +85,7 @@ class Blackjack(commands.Cog):
                     await self.lose(m)
                 else:
                     await self.win(m)
+            return False
 
         # Checks for busts or blackjacks
         # return: True if the game is still going
