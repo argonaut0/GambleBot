@@ -1,4 +1,5 @@
 import os
+import logging
 
 from discord.ext import commands
 
@@ -7,8 +8,11 @@ from games import Games
 from blackjack import Blackjack
 from coinflip import CoinFlip
 
+
 COMMAND_PREFIX = "."
 TOKEN = os.environ.get("DISCORD_BOT_SECRET")
+
+logging.basicConfig(level=logging.INFO)
 
 bot = commands.Bot(command_prefix=COMMAND_PREFIX)
 bot.add_cog(Eco(bot))
