@@ -1,93 +1,118 @@
 import discord
-from discord.ext import commands
+from discord.ext.commands import Cog
+from discord.ext.commands import Context
+from discord.ext.commands import command
+
+from typing import Dict
 
 
-class Eco(commands.Cog):
-    NO_BAL_STR = ", You don't have enough money!"
-    INIT_WALLET_BAL = 1000
+##
+# Eco Cog
+#
+# Represents the wallets and bank accounts of Users
+##
+class Eco(Cog):
+    NO_BAL_STR: str = ", You don't have enough money!"
+    INIT_WALLET_BAL: int = 1000
 
-    def __init__(self, bot):
-        self.bot = bot
+    def __init__(self, bot: discord.Client) -> None:
+        self.bot: discord.Client = bot
+        self.wallets: Dict[int, Eco.Wallet] = {}
+        self.bank: Dict[int, Eco.Account] = {}
 
-        # wallets is dict(str, Wallet)
-        self.wallets = {}
-        # bank is dict(str, Account)
-        self.bank = {}
+    ##
+    # COMMANDS
+    ##
 
-    @commands.command()
-    async def bal(self, ctx):
+    ##
+    # bal
+    #   Prints the user's balance
+    ##
+    @command()
+    async def bal(self, ctx: Context) -> None:
         await self.print_bal(ctx)
 
-    async def print_bal(self, ctx):
-        # type: (Context) -> None
-        await self._check_wallet(ctx.author.id)
-        wal = self.wallets[ctx.author.id].bal
-        # TODO bank
-        bal = 0  # self.bank[ctx.author.id].bal
-        await ctx.channel.send(str(ctx.author) + " you have: \n   Wallet: $" + str(wal) + "\n   Bank: $" + str(bal))
-
-    @commands.command()
-    async def pay(self, ctx, usr: discord.Member, amt: int):
-        # type: (Context, User, amt) -> bool
+    ##
+    # pay [target user] [amount]
+    #   Transfers money from user's wallet to target user
+    ##
+    @command()
+    async def pay(self, ctx: Context, usr: discord.Member, amt: int) -> bool:
         await self._check_wallet(ctx.author.id)
         await self._check_wallet(usr.id)
         if await self.spend(ctx, amt):
             await self.wallets[usr.id].add(amt)
             await ctx.channel.send(str(ctx.author) + " gave " + str(usr) + " $" + str(amt))
 
-    async def spend(self, ctx, amt):
-        # type: (Context, int) -> bool
+    ##
+    # PUBLIC API
+    ##
+
+    ##
+    # Prints the user's balance
+    ##
+    async def print_bal(self, ctx: Context) -> None:
+        await self._check_wallet(ctx.author.id)
+        wal = self.wallets[ctx.author.id].bal
+        # TODO bank
+        bal = 0  # self.bank[ctx.author.id].bal
+        await ctx.channel.send(str(ctx.author) + " you have: \n   Wallet: $" + str(wal) + "\n   Bank: $" + str(bal))
+
+    ##
+    # Deducts an amount from the user's wallet
+    #   Return: True if successful
+    ##
+    async def spend(self, ctx: Context, amt: int) -> bool:
         await self._check_wallet(ctx.author.id)
         if not await self.wallets[ctx.author.id].use(amt):
             await ctx.channel.send(str(ctx.author) + Eco.NO_BAL_STR)
             return False
         return True
 
-    async def earn(self, ctx, amt):
+    ##
+    # Adds an amount to the user's wallet
+    ##
+    async def earn(self, ctx: Context, amt: int):
         await self._check_wallet(ctx.author.id)
         await self.wallets[ctx.author.id].add(amt)
         await self.print_bal(ctx)
 
-    async def _check_wallet(self, uid):
-        # type: (str) -> None
+    ##
+    # PRIVATE METHODS
+    ##
+    async def _check_wallet(self, uid: int) -> None:
         if uid not in self.wallets:
             await self._add_wallet(uid)
 
-    async def _add_wallet(self, uid):
-        # type: (str) -> None
+    #
+    async def _add_wallet(self, uid: int) -> None:
         self.wallets[uid] = Eco.Wallet(Eco.INIT_WALLET_BAL)
 
     class Wallet:
-        def __init__(self, bal):
-            # type: (int) -> None
+        def __init__(self, bal: int) -> None:
             self.bal = bal
 
-        async def use(self, i):
-            # type: (int) -> bool
+        async def use(self, i: int) -> bool:
             if self.bal >= i:
                 self.bal -= i
                 return True
             else:
                 return False
 
-        async def add(self, i):
-            # type: (int) -> None
+        async def add(self, i: int) -> None:
             self.bal += i
 
     # TODO Unimplemented
     class Account:
-        def __init__(self):
-            self.bal = 0
-
-        def __init__(self, bal):
+        def __init__(self, bal: int) -> None:
             self.bal = bal
 
-        async def withdraw(self, i):
+        async def withdraw(self, i: int) -> bool:
             if self.bal >= i:
                 self.bal -= i
                 return True
             else:
                 return False
 
-        async def deposit(self, i):
+        async def deposit(self, i: int) -> None:
             self.bal += i

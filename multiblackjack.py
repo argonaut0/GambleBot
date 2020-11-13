@@ -4,6 +4,8 @@ from discord.ext import commands
 from gtypes import Card, CardHand
 
 
+# todo
+
 class mBlackjack(commands.Cog):
     DECK: CardHand = ["A", 2, 3, 4, 5, 6, 7, 8, 9, 10, "J", "Q", "K"] * 4
 
@@ -20,4 +22,4 @@ class mBlackjack(commands.Cog):
     @commands.command()
     async def gblackjack(self, ctx, *args: discord.Member):
         for m in args:
-            await ctx.send('Hello {0.name}'.format(m)) 
+            await ctx.send('Hello {0.name}'.format(m))

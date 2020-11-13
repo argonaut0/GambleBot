@@ -1,19 +1,29 @@
-import discord
 import copy
 from random import randrange
 from discord.ext import commands
 from gtypes import Card, CardHand
 
 
+##
+# Single Player Blackjack Cog
+#
+# Requires Eco and Games Cogs
+##
 class Blackjack(commands.Cog):
     DECK: CardHand = ["A", 2, 3, 4, 5, 6, 7, 8, 9, 10, "J", "Q", "K"] * 4
 
     def __init__(self, bot):
         self.bot = bot
 
+    ##
+    # Blackjack Command
+    #
+    #   Starts a new game of blackjack for the player if they are not
+    #   in a game and have enough money
+    ##
     @commands.command()
     async def blackjack(self, ctx, bet: int):
-        # type: (self, context, int) -> None
+        # type: (Context, int) -> None
         eco = self.bot.get_cog('Eco')
         games = self.bot.get_cog('Games')
         if eco and games:
@@ -21,14 +31,20 @@ class Blackjack(commands.Cog):
                 games.add(ctx, Blackjack._Game(ctx.author, bet, self))
                 await games.get(ctx).start(ctx.message)
 
+    ##
+    # Represents a game of Blackjack
+    ##
     class _Game:
         def __init__(self, player, bet, handle):
             # type: (_Game, User, int, Blackjack) -> None
             self.bot = handle.bot
             self.player = player
             self.bet = bet
+            # Card pool in one game
             self.pool: CardHand = copy.deepcopy(Blackjack.DECK)
+            # Player hand
             self.hand: CardHand = []
+            # Dealer hidden card
             self.hidden: Card = None
             # Dealer Hand
             self.dealer_hand: CardHand = []
@@ -37,8 +53,10 @@ class Blackjack(commands.Cog):
         # PUBLIC API
         ##
 
-        # Does the initial deal
+        ##
+        # Does the initial deal and starts the game
         # return: True if the game is still going
+        ##
         async def start(self, m):
             # type: (Message) -> bool
             self.hidden = self.draw()
@@ -46,8 +64,10 @@ class Blackjack(commands.Cog):
             self.dealer_hand.append(self.draw())
             return await self._hit(m)
 
-        # Makes a play
+        ##
+        # Makes a play, either 'hit' or 'stand'
         # return: True if the game is still going
+        ##
         async def play(self, m):
             # type: (Message) -> bool
             if m.content == 'hit':
@@ -61,8 +81,10 @@ class Blackjack(commands.Cog):
         # PRIVATE GAME FUNCTIONS
         ##
 
+        ##
         # Makes a hit
         # return: True if the game is still going
+        ##
         async def _hit(self, m):
             # type: (Message) -> bool
             self.hand.append(self.draw())
@@ -71,7 +93,11 @@ class Blackjack(commands.Cog):
 
             return await self._eval_game(m)
 
-        # Makes the stand and ends the game if no one busts or blackjacks
+        ##
+        # Makes a stand
+        # Post-condition: Game ends
+        # return: False
+        ##
         async def _stand(self, m):
             # type: (Message) -> bool
             self.dealer_hand[0] = self.hidden
@@ -87,8 +113,10 @@ class Blackjack(commands.Cog):
                     await self.win(m)
             return False
 
-        # Checks for busts or blackjacks
-        # return: True if the game is still going
+        ##
+        # Checks for busts or blackjacks, ends game accordingly
+        # return: True if the game is still going, else False
+        ##
         async def _eval_game(self, m):
             # type: (Message) -> bool
             if self._sum(self.hand) == 21:
@@ -117,7 +145,7 @@ class Blackjack(commands.Cog):
         def print_hands(self) -> str:
             return "Dealer hand: " + str(self.dealer_hand) + "\n" + "Your hand is " + str(self.hand)
 
-        # return: popped random card from the deck
+        # return: popped random Card from the pool
         def draw(self) -> Card:
             return self.pool.pop(randrange(len(self.pool)))
 
@@ -141,7 +169,7 @@ class Blackjack(commands.Cog):
             if eco:
                 await eco.earn(m, amt)
 
-        # return: the sum of the hand
+        # return: the blackjack sum of a hand
         def _sum(self, cds: CardHand) -> int:
             s: int = 0
 
