@@ -93,7 +93,7 @@ class Eco(Cog):
             self.bal = bal
 
         async def use(self, i: int) -> bool:
-            if self.bal >= i:
+            if self.bal >= i and i > 0:
                 self.bal -= i
                 return True
             else:
@@ -108,7 +108,7 @@ class Eco(Cog):
             self.bal = bal
 
         async def withdraw(self, i: int) -> bool:
-            if self.bal >= i:
+            if self.bal >= i and i > 0:
                 self.bal -= i
                 return True
             else:
